@@ -67,26 +67,30 @@ class MainFragment : Fragment() {
             while (true) {
                 val topPos = myLayoutManager.findFirstVisibleItemPosition()
                 val bottomPos = myLayoutManager.findLastVisibleItemPosition()
-                if (topPos >= 0) {
+                if (topPos in 0 until bottomPos) {
 
-                    val vh = rv.findViewHolderForAdapterPosition(topPos)
-                    val item = myAdapter.currentList[topPos]
+                    for( pos in topPos .. bottomPos) {
 
-                    with (vh as TimerViewHolder ) {
-                        val timerValueTxt = itemView.findViewById<TextView>(R.id.timer_time_txt)
-                        if (viewModel.map[item.id] == null) {
-                            viewModel.map[item.id] = System.currentTimeMillis()
-                        } else {
-                            val timeValue = (System.currentTimeMillis() - viewModel.map[item.id]!!) / 1000
-                            timerValueTxt.text = timeValue.toString()
+                        val vh = rv.findViewHolderForAdapterPosition(pos)
+                        val item = myAdapter.currentList[pos]
+
+                        with(vh as TimerViewHolder) {
+                            val timerValueTxt = itemView.findViewById<TextView>(R.id.timer_time_txt)
+                            if (viewModel.map[item.id] == null) {
+                                viewModel.map[item.id] = System.currentTimeMillis()
+                            } else {
+                                val timeValue =
+                                    (System.currentTimeMillis() - viewModel.map[item.id]!!) / 1000
+                                timerValueTxt.text = timeValue.toString()
+
+                            }
 
                         }
-
                     }
                 }
 
                 Log.d("Test", "Top pos: $topPos; bottom pos: $bottomPos")
-                delay(500)
+                delay(100)
 
             }
         }
