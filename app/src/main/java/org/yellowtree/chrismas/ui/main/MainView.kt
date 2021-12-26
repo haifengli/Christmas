@@ -44,15 +44,14 @@ class MainViewImpl private constructor(
             adapter = myAdapter
             myLayoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
             layoutManager = myLayoutManager
-        }
-
-        rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (myLayoutManager.findLastCompletelyVisibleItemPosition() == myLayoutManager.itemCount - 1) {
-                    eventSubscriber.onMainViewEvent(UserSeeLastItem)
+            addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    if (myLayoutManager.findLastCompletelyVisibleItemPosition() == myLayoutManager.itemCount - 1) {
+                        eventSubscriber.onMainViewEvent(UserSeeLastItem)
+                    }
                 }
-            }
-        })
+            })
+        }
     }
 
     override val view: View = this

@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.RecyclerView
 import org.yellowtree.chrismas.R
 import java.util.concurrent.TimeUnit
 
-
 class MyListAdapter : RecyclerView.Adapter<TimerViewHolder>() {
 
     private var size = 0
@@ -32,7 +31,6 @@ class MyListAdapter : RecyclerView.Adapter<TimerViewHolder>() {
     override fun getItemCount() = size
 
     private fun getItemByPosition(position: Int) = visibleItems[position]
-
 }
 
 class TimerViewHolder(view : View) : RecyclerView.ViewHolder(view) {
@@ -41,7 +39,7 @@ class TimerViewHolder(view : View) : RecyclerView.ViewHolder(view) {
     private val timerText = view.findViewById<TextView>(R.id.timer_time_txt)
 
     fun bind(timer : TimerItem) {
-        nameText.text = "Timer " + timer.id
+        nameText.text = "Timer ${timer.id}"
         timerText.text = generateTimeDiffString(System.currentTimeMillis() - timer.startTime)
     }
 }
