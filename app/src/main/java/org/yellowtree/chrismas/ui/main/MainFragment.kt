@@ -2,12 +2,10 @@ package org.yellowtree.chrismas.ui.main
 
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,12 +18,14 @@ class MainFragment : Fragment() {
 
     companion object {
         fun newInstance() = MainFragment()
+        const val TIMER_DELAY = 1000L / 30L
     }
 
     private lateinit var viewModel: MainViewModel
     private lateinit var rv : RecyclerView
     private lateinit var myAdapter : MyListAdapter
     private lateinit var myLayoutManager : LinearLayoutManager
+    private var visibleItemRange  = IntRange.EMPTY
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,16 +47,14 @@ class MainFragment : Fragment() {
             layoutManager = myLayoutManager
         }
 
-        viewModel.timerItems.observe(viewLifecycleOwner, Observer { listItem ->
-            myAdapter.submitList(listItem)
 
-        })
 
         rv.addOnScrollListener( object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 if (myLayoutManager.findLastCompletelyVisibleItemPosition() == myLayoutManager.itemCount - 1) {
                     viewModel.addTimers()
                 }
+
             }
 
         })
@@ -65,36 +63,32 @@ class MainFragment : Fragment() {
         val scope = MainScope()
         scope.launch {
             while (true) {
-                val topPos = myLayoutManager.findFirstVisibleItemPosition()
-                val bottomPos = myLayoutManager.findLastVisibleItemPosition()
-                if (topPos in 0 until bottomPos) {
-
-                    for( pos in topPos .. bottomPos) {
-
-                        val vh = rv.findViewHolderForAdapterPosition(pos)
-                        val item = myAdapter.currentList[pos]
-
-                        with(vh as TimerViewHolder) {
-                            val timerValueTxt = itemView.findViewById<TextView>(R.id.timer_time_txt)
-                            if (viewModel.map[item.id] == null) {
-                                viewModel.map[item.id] = System.currentTimeMillis()
-                            } else {
-                                val timeValue =
-                                    (System.currentTimeMillis() - viewModel.map[item.id]!!) / 1000
-                                timerValueTxt.text = timeValue.toString()
-
-                            }
-
-                        }
-                    }
+                val curRange = myLayoutManager.findFirstVisibleItemPosition()..myLayoutManager.findLastVisibleItemPosition()
+                if (curRange != visibleItemRange) {
+                    visibleItemRange = curRange
+                    viewModel.updateVisibleArea(curRange)
                 }
 
-                Log.d("Test", "Top pos: $topPos; bottom pos: $bottomPos")
-                delay(100)
+                updateUI()
+                delay(TIMER_DELAY)
 
             }
         }
 
+        viewModel.size.observe(viewLifecycleOwner, Observer {
+            myAdapter.setSize(it)
+        })
+
+
+        viewModel.visibleArea.observe(viewLifecycleOwner, Observer {
+            myAdapter.setVisibleArea(it.first, it.second)
+        })
+
+    }
+
+
+    private fun updateUI() {
+        myAdapter.refreshVisibleArea()
     }
 
 
