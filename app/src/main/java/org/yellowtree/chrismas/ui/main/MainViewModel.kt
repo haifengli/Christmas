@@ -1,35 +1,43 @@
 package org.yellowtree.chrismas.ui.main
 
-import android.animation.TimeInterpolator
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 
 class MainViewModel : ViewModel() {
-    private val _timerItems = MutableLiveData<List<TimerItem>>()
-    private var timerList : MutableList<TimerItem> = MutableList<TimerItem>(20) { i -> TimerItem(i) }
-    private var id : Int = 20
 
-    val map = HashMap<Int, Long>()
+    private val timerItemsMap = mutableMapOf(0 to TimerItem(0))
+    private val _size = MutableLiveData(1)
+    private val _visibleItemRange = MutableLiveData(0..(_size.value ?: 0))
+    private val _mainUiModel = MediatorLiveData<MainUiModel>()
+
+    val mainUiModel: LiveData<MainUiModel> = _mainUiModel
 
     init {
-        _timerItems.value = timerList
+        _mainUiModel.addSource(_size) {
+            _mainUiModel.value = generateMainUiModel()
+        }
+        _mainUiModel.addSource(_visibleItemRange) {
+            _mainUiModel.value = generateMainUiModel()
+        }
     }
-    val timerItems : LiveData<List<TimerItem>>
-        get() = _timerItems
-
-
-
 
     fun addTimers() {
-        var newList = ArrayList(timerList)
-
-        for( i in 0 .. 10) {
-            newList.add(TimerItem(id++))
-        }
-        timerList = newList
-        _timerItems.value = newList
+        _size.postValue((_size.value ?: 1) * 2)
     }
 
+    fun updateVisibleItemRangeChanged(range: IntRange) {
+        range.forEach {
+            if (!timerItemsMap.containsKey(it)) {
+                timerItemsMap[it] = TimerItem(it)
+            }
+        }
+        _visibleItemRange.postValue(range)
+    }
 
+    private fun generateMainUiModel() =
+        MainUiModel(
+            _size.value ?: 0,
+            _visibleItemRange.value?.mapNotNull {
+                it to timerItemsMap[it]
+            }?.toMap() ?: mapOf()
+        )
 }

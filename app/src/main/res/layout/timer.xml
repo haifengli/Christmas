@@ -6,7 +6,7 @@
     <TextView
         android:id="@+id/timer_name_txt"
         android:gravity="center_vertical"
-        android:layout_width="150dp"
+        android:layout_width="120dp"
         android:layout_height="match_parent"/>
 
     <TextView
