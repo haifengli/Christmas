@@ -29,6 +29,7 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
+        viewModel.mainUiModel.observeForever { mainView.updateUi(it) }
 
         mainView.subscribeMainViewEvent(object : MainViewEventSubscriber {
             override fun onMainViewEvent(event: MainViewEvent) {
@@ -39,11 +40,7 @@ class MainFragment : Fragment() {
             }
         })
 
-        viewModel.mainUiModel.observeForever { mainView.updateUi(it) }
-
-        MainScope().launch {
-            mainView.start()
-        }
+        MainScope().launch { mainView.start() }
     }
 
 }

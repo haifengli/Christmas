@@ -31,7 +31,7 @@ class MainViewImpl private constructor(
     private var visibleItemRange: IntRange = IntRange.EMPTY
 
     companion object {
-        const val TIMER_DELAY_MS = 33L // 30 refreshes per seconds
+        const val TIMER_DELAY_MS = 1000L / 30L // 30 refreshes per seconds
         fun create(context: Context) = MainViewImpl(context)
     }
 

@@ -6,7 +6,7 @@ class MainViewModel : ViewModel() {
 
     private val timerItemsMap = mutableMapOf(0 to TimerItem(0))
     private val _size = MutableLiveData(1)
-    private val _visibleItemRange = MutableLiveData(0..(_size.value ?: 0))
+    private val _visibleItemRange = MutableLiveData(IntRange.EMPTY)
     private val _mainUiModel = MediatorLiveData<MainUiModel>()
 
     val mainUiModel: LiveData<MainUiModel> = _mainUiModel

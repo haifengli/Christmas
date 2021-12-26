@@ -29,24 +29,20 @@ class MyListAdapter : RecyclerView.Adapter<TimerViewHolder>() {
         getItemByPosition(position)?.let { holder.bind(it) }
     }
 
-    override fun getItemCount(): Int {
-        return size
-    }
+    override fun getItemCount() = size
 
     private fun getItemByPosition(position: Int) = visibleItems[position]
 
 }
 
 class TimerViewHolder(view : View) : RecyclerView.ViewHolder(view) {
+
+    private val nameText = view.findViewById<TextView>(R.id.timer_name_txt)
+    private val timerText = view.findViewById<TextView>(R.id.timer_time_txt)
+
     fun bind(timer : TimerItem) {
-        with(itemView) {
-            findViewById<TextView>(R.id.timer_name_txt).apply {
-                text = "Timer " + timer.id
-            }
-            findViewById<TextView>(R.id.timer_time_txt).apply {
-                text = generateTimeDiffString(System.currentTimeMillis() - timer.startTime)
-            }
-        }
+        nameText.text = "Timer " + timer.id
+        timerText.text = generateTimeDiffString(System.currentTimeMillis() - timer.startTime)
     }
 }
 
